@@ -1,33 +1,22 @@
 // routes/contact.js
-import express from 'express';
-import nodemailer from 'nodemailer';
-
+const express = require("express");
 const router = express.Router();
+const sendMail = require("../mailer");
 
-router.post('/send', async (req, res) => {
+router.post("/", async (req, res) => {
   const { name, email, message } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  const html = `
+    <h3>New Contact Submission</h3>
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Message:</strong> ${message}</p>
+  `;
 
-  const mailOptions = {
-    from: email,
-    to: process.env.EMAIL_USER,
-    subject: 'New Contact Message',
-    html: `<p><strong>${name}</strong> wrote:<br/>${message}</p>`,
-  };
+  const result = await sendMail("youremail@yourdomain.com", "New Contact Message", html);
 
-  try {
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to send email' });
-  }
+  if (result.success) res.json({ status: "Email sent successfully!" });
+  else res.status(500).json({ error: result.error.message });
 });
 
-export default router;
+module.exports = router;

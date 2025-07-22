@@ -1,23 +1,36 @@
 // routes/payment.js
-import express from 'express';
-import Stripe from 'stripe';
-
+const express = require("express");
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const Stripe = require("stripe");
+require("dotenv").config();
 
-router.post('/create-intent', async (req, res) => {
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+router.post("/checkout", async (req, res) => {
+  const { name, amount } = req.body;
+
   try {
-    const { amount } = req.body;
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'usd',
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: { name },
+            unit_amount: amount * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: "https://yourdomain.com/success",
+      cancel_url: "https://yourdomain.com/cancel",
     });
 
-    res.send({ clientSecret: paymentIntent.client_secret });
+    res.json({ id: session.id });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-export default router;
+module.exports = router;
