@@ -21,8 +21,9 @@ router.post("/checkout", async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/cancel",
+      success_url: "https://raywebsolutions.vercel.app/success",
+      cancel_url: "https://raywebsolutions.vercel.app/cancel",
+
     });
 
     res.json({ id: session.id });
