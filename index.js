@@ -19,6 +19,10 @@ app.use(
 // ✅ Stripe webhook route (must be before express.json to handle raw body if needed)
 app.use("/api/payment/webhook", require("./routes/webhook"));
 
+//emailOtp
+app.use("/api/email", require("./routes/emailOtp"));
+
+
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
