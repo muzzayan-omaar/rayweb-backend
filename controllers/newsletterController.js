@@ -13,28 +13,30 @@ exports.subscribeNewsletter = async (req, res) => {
     await newSubscriber.save();
     res.status(200).json({ message: 'Subscribed successfully!' });
   } catch (error) {
+    console.error(error); // <- always log for debugging
     res.status(500).json({ message: 'Server error. Try again later.' });
   }
 };
 
-// ✅ Get all subscribers
+// Fetch all subscribers
 exports.getAllSubscribers = async (req, res) => {
   try {
     const subscribers = await Newsletter.find().sort({ subscribedAt: -1 });
     res.status(200).json(subscribers);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch subscribers" });
+    console.error(error);
+    res.status(500).json({ message: 'Server error. Try again later.' });
   }
 };
 
-// ✅ Delete a subscriber
+// Delete a subscriber
 exports.deleteSubscriber = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await Newsletter.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ message: "Subscriber not found" });
-    res.status(200).json({ message: "Subscriber deleted successfully" });
+    await Newsletter.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Subscriber removed successfully.' });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete subscriber" });
+    console.error(error);
+    res.status(500).json({ message: 'Server error. Try again later.' });
   }
 };
