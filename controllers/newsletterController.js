@@ -2,15 +2,17 @@ const Newsletter = require('../models/Newsletter');
 
 exports.subscribeNewsletter = async (req, res) => {
   const { email } = req.body;
+
   try {
     const existing = await Newsletter.findOne({ email });
-    if (existing) return res.status(400).json({ message: 'You are already subscribed.' });
+    if (existing) {
+      return res.status(400).json({ message: 'You are already subscribed.' });
+    }
 
     const newSubscriber = new Newsletter({ email });
     await newSubscriber.save();
     res.status(200).json({ message: 'Subscribed successfully!' });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error. Try again later.' });
   }
 };
@@ -21,8 +23,7 @@ exports.getAllSubscribers = async (req, res) => {
     const subscribers = await Newsletter.find().sort({ subscribedAt: -1 });
     res.status(200).json(subscribers);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error. Try again later.' });
+    res.status(500).json({ message: 'Failed to fetch subscribers.' });
   }
 };
 
