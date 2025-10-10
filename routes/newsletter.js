@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { getAllSubscribers, deleteSubscriber, subscribeNewsletter } = require('../controllers/newsletterController');
+const { subscribeNewsletter, getAllSubscribers, deleteSubscriber } = require('../controllers/newsletterController');
 
-// POST → Subscribe
+// Subscribe
 router.post('/', subscribeNewsletter);
 
-// GET → Fetch all
+// Get all subscribers
 router.get('/', getAllSubscribers);
 
-// DELETE → Remove a subscriber
+// Delete a subscriber
 router.delete('/:id', deleteSubscriber);
 
 module.exports = router;
-
