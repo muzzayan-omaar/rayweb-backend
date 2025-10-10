@@ -19,21 +19,29 @@ app.use(
 // ✅ Stripe webhook route (must be before express.json to handle raw body if needed)
 app.use("/api/payment/webhook", require("./routes/webhook"));
 
-//emailOtp
+// ✅ Email OTP
 app.use("/api/email", require("./routes/emailOtp"));
-
 
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
+// ✅ Connect to MongoDB
 require("./config/db")();
 
-// Routes
+// ✅ Public Routes
 app.use("/api/contact", require("./routes/contact"));
 app.use("/api/newsletter", require("./routes/newsletter"));
 app.use("/api/payment", require("./routes/payment"));
 
+// ✅ Admin Routes (new entities)
+app.use("/api/admin/posts", require("./routes/posts"));
+app.use("/api/admin/packages", require("./routes/packages"));
+app.use("/api/admin/subscriptions", require("./routes/subscriptions"));
+app.use("/api/admin/messages", require("./routes/messages"));
+app.use("/api/admin/reviews", require("./routes/reviews"));
+app.use("/api/admin/requests", require("./routes/requests"));
+app.use("/api/admin/discounts", require("./routes/discounts"));
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
