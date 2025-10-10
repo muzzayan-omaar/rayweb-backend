@@ -10,16 +10,16 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// CREATE package
+// CREATE
 exports.create = async (req, res) => {
   try {
-    const { name, price, formerPrice, features, collapsible, popular } = req.body;
+    const { name, price, formerPrice, features, extraFeatures, popular } = req.body;
 
     if (!name || !price || !features || !features.length) {
       return res.status(400).json({ error: "Name, price, and at least one feature are required" });
     }
 
-    const pkg = new Package({ name, price, formerPrice, features, collapsible, popular });
+    const pkg = new Package({ name, price, formerPrice, features, extraFeatures, popular });
     await pkg.save();
     res.json(pkg);
   } catch (err) {
@@ -27,10 +27,10 @@ exports.create = async (req, res) => {
   }
 };
 
-// UPDATE package
+// UPDATE
 exports.update = async (req, res) => {
   try {
-    const { name, price, formerPrice, features, collapsible, popular } = req.body;
+    const { name, price, formerPrice, features, extraFeatures, popular } = req.body;
 
     if (features && !Array.isArray(features)) {
       return res.status(400).json({ error: "Features must be an array" });
@@ -38,7 +38,7 @@ exports.update = async (req, res) => {
 
     const pkg = await Package.findByIdAndUpdate(
       req.params.id,
-      { name, price, formerPrice, features, collapsible, popular },
+      { name, price, formerPrice, features, extraFeatures, popular },
       { new: true, runValidators: true }
     );
 
@@ -49,7 +49,7 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE package
+// DELETE
 exports.remove = async (req, res) => {
   try {
     const pkg = await Package.findByIdAndDelete(req.params.id);

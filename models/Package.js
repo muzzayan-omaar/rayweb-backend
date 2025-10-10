@@ -4,9 +4,9 @@ const PackageSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
-    formerPrice: { type: Number, default: null }, // optional crossed price
+    formerPrice: { type: Number, default: null },
     features: { type: [String], required: true },
-    collapsible: { type: [String], default: [] },
+    extraFeatures: { type: [String], default: [] }, // was collapsible
     popular: { type: Boolean, default: false },
   },
   { timestamps: true }
