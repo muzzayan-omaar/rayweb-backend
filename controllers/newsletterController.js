@@ -1,38 +1,35 @@
-const Newsletter = require('../models/Newsletter');
-const nodemailer = require('nodemailer');
+const Newsletter = require("../models/Newsletter");
+const sendMail = require("../utils/mailer");
 
 // Subscribe
 exports.subscribeNewsletter = async (req, res) => {
   const { email } = req.body;
-  try {
-    const existing = await Newsletter.findOne({ email });
-    if (existing) return res.status(400).json({ message: 'You are already subscribed.' });
 
+  try {
+    // Check if already subscribed
+    const existing = await Newsletter.findOne({ email });
+    if (existing)
+      return res.status(400).json({ message: "You are already subscribed." });
+
+    // Save new subscriber
     const newSubscriber = new Newsletter({ email });
     await newSubscriber.save();
 
-    // Send confirmation email
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"RayWebSolutions" <${process.env.EMAIL_USER}>`,
+    // ✅ Send confirmation email using centralized mailer
+    await sendMail({
       to: email,
-      subject: "Subscription Confirmed",
-      html: `<p>Thank you for subscribing to our newsletter! 🎉</p>`,
+      subject: "🎉 Subscription Confirmed",
+      text: "Thank you for subscribing to RayWebSolutions newsletter! 🎉",
     });
 
-    res.status(200).json({ message: 'Subscribed successfully! Check your email.' });
+    res
+      .status(200)
+      .json({ message: "Subscribed successfully! Check your email inbox." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error. Try again later.' });
+    console.error("Newsletter subscription error:", error);
+    res
+      .status(500)
+      .json({ message: "Server error. Try again later." });
   }
 };
 
@@ -43,7 +40,9 @@ exports.getAllSubscribers = async (req, res) => {
     res.status(200).json(subscribers);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error. Could not fetch subscribers.' });
+    res
+      .status(500)
+      .json({ message: "Server error. Could not fetch subscribers." });
   }
 };
 
@@ -52,9 +51,11 @@ exports.deleteSubscriber = async (req, res) => {
   try {
     const { id } = req.params;
     await Newsletter.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Subscriber removed.' });
+    res.status(200).json({ message: "Subscriber removed." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error. Could not delete subscriber.' });
+    res
+      .status(500)
+      .json({ message: "Server error. Could not delete subscriber." });
   }
 };
