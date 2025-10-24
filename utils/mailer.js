@@ -1,20 +1,27 @@
 // utils/mailer.js
-const sgMail = require("@sendgrid/mail");
+const nodemailer = require("nodemailer");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
+// ✅ Send mail helper
 const sendMail = async ({ to, subject, text, html }) => {
   try {
-    await sgMail.send({
+    await transporter.sendMail({
+      from: `"Ray Web Solutions" <${process.env.EMAIL_USER}>`,
       to,
-      from: process.env.SENDGRID_FROM_EMAIL, // must match verified sender in SendGrid
       subject,
       text,
       html,
     });
-    console.log(`✅ Email sent to ${to}`);
+    console.log(`📧 Email sent to ${to}`);
   } catch (err) {
-    console.error("❌ Error sending email:", err.response?.body || err.message);
+    console.error("❌ Email sending failed:", err.message);
   }
 };
 

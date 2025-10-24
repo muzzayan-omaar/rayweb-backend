@@ -1,16 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
   subscribeNewsletter,
   getAllSubscribers,
-  deleteSubscriber
-} = require('../controllers/newsletterController');
+  deleteSubscriber,
+} = require("../controllers/newsletterController");
 
-// Public: subscribe
-router.post('/', subscribeNewsletter);
+// Public route
+router.post("/", subscribeNewsletter);
 
-// Admin: fetch all / delete
-router.get('/', getAllSubscribers);
-router.delete('/:id', deleteSubscriber);
+// Admin routes
+router.get("/", getAllSubscribers);
+router.delete("/:id", deleteSubscriber);
 
 module.exports = router;

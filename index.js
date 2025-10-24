@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Setup CORS to allow Vercel and localhost during development
+// ✅ Setup CORS for both frontend (Vercel) and local dev
 app.use(
   cors({
     origin: ["https://raywebsolutions.vercel.app", "http://localhost:5173"],
@@ -16,10 +16,10 @@ app.use(
   })
 );
 
-// ✅ Stripe webhook route (must be before express.json to handle raw body if needed)
+// ✅ Stripe webhook route (keep before JSON parsing)
 app.use("/api/payment/webhook", require("./routes/webhook"));
 
-// ✅ Email OTP
+// ✅ Email OTP route
 app.use("/api/email", require("./routes/emailOtp"));
 
 // ✅ Body parsers
@@ -38,12 +38,18 @@ app.use("/api/payment", require("./routes/payment"));
 app.use("/api/admin/posts", require("./routes/posts"));
 app.use("/api/admin/packages", require("./routes/packages"));
 
-// ❌ Commented out — to be added later when ready
+// ❌ Commented routes for later expansion
 // app.use("/api/admin/subscriptions", require("./routes/subscriptions"));
 // app.use("/api/admin/messages", require("./routes/messages"));
 // app.use("/api/admin/reviews", require("./routes/reviews"));
 // app.use("/api/admin/requests", require("./routes/requests"));
 // app.use("/api/admin/discounts", require("./routes/discounts"));
 
+// ✅ Fallback route (optional, helps in Render debugging)
+app.get("/", (req, res) => {
+  res.send("✅ RayWebSolutions Backend API is running...");
+});
+
+// ✅ Server start
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
