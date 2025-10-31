@@ -1,18 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
 
-// Register admin (use once to create an account)
+// Register admin (use once)
 router.post("/register", async (req, res) => {
   try {
     const { email, password, name } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email & password required" });
+
     const exists = await Admin.findOne({ email });
     if (exists) return res.status(400).json({ message: "Admin already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const admin = await Admin.create({ email, password: hashedPassword, name });
+
     res.status(201).json({ message: "Admin registered successfully", admin });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -23,6 +26,8 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email & password required" });
+
     const admin = await Admin.findOne({ email });
     if (!admin) return res.status(401).json({ message: "Invalid credentials" });
 
@@ -41,7 +46,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Verify middleware
+// Middleware to protect routes
 const verifyAdmin = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(403).json({ message: "No token provided" });
