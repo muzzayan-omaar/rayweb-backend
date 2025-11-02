@@ -48,10 +48,12 @@ app.use("/api/admin/auth", adminAuthRouter);
 // ✅ Protected Admin Routes (secured by token middleware)
 app.use("/api/admin/posts", verifyAdmin, require("./routes/posts"));
 app.use("/api/admin/packages", verifyAdmin, require("./routes/packages"));
+app.use("/api/admin/messages", verifyAdmin, require("./routes/messages"));
+
 
 // ❌ Commented routes for later expansion
 // app.use("/api/admin/subscriptions", verifyAdmin, require("./routes/subscriptions"));
-// app.use("/api/admin/messages", verifyAdmin, require("./routes/messages"));
+ app.use("/api/admin/messages", verifyAdmin, require("./routes/messages"));
 // app.use("/api/admin/reviews", verifyAdmin, require("./routes/reviews"));
 // app.use("/api/admin/requests", verifyAdmin, require("./routes/requests"));
 // app.use("/api/admin/discounts", verifyAdmin, require("./routes/discounts"));

@@ -2,6 +2,17 @@
 const Contact = require("../models/Contact");
 const sendMail = require("../utils/mailer");
 
+// Get all messages (for admin)
+exports.getMessages = async (req, res) => {
+  try {
+    const messages = await Contact.find().sort({ createdAt: -1 });
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch messages." });
+  }
+};
+
 exports.submitContact = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
