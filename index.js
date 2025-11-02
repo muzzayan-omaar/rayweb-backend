@@ -3,6 +3,9 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
 dotenv.config();
 const app = express();
 
@@ -32,6 +35,11 @@ require("./config/db")();
 app.use("/api/contact", require("./routes/contact"));
 app.use("/api/newsletter", require("./routes/newsletter"));
 app.use("/api/payment", require("./routes/payment"));
+
+
+app.use(helmet());
+const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 60 }); // 60 requests / min
+app.use(limiter);
 
 // ✅ Admin Authentication Route
 const { router: adminAuthRouter, verifyAdmin } = require("./routes/adminAuth");
