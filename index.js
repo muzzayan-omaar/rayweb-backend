@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 dotenv.config();
 const app = express();
 
-// ✅ Setup CORS for both frontend (Vercel) and local dev
+// ✅ Setup CORS
 app.use(
   cors({
     origin: ["https://raywebsolutions.vercel.app", "http://localhost:5173"],
@@ -18,7 +18,7 @@ app.use(
   })
 );
 
-// ✅ Stripe webhook route (keep before JSON parsing)
+// ✅ Stripe webhook route (before JSON parsing)
 app.use("/api/payment/webhook", require("./routes/webhook"));
 
 // ✅ Email OTP route
@@ -36,23 +36,22 @@ app.use("/api/contact", require("./routes/contact"));
 app.use("/api/newsletter", require("./routes/newsletter"));
 app.use("/api/payment", require("./routes/payment"));
 
-
+// ✅ Security
 app.use(helmet());
-const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 60 }); // 60 requests / min
+const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 60 });
 app.use(limiter);
 
-// ✅ Admin Authentication Route
-const { router: adminAuthRouter, verifyAdmin } = require("./routes/adminAuth");
+// ✅ Admin Auth Route
+const adminAuthRouter = require("./routes/adminAuth");
 app.use("/api/admin/auth", adminAuthRouter);
 
-// ✅ Protected Admin Routes (secured by token middleware)
+// ✅ Protected Admin Routes (use middleware from middleware/adminMiddleware.js)
+const { verifyAdmin } = require("./middleware/adminMiddleware");
 app.use("/api/admin/posts", verifyAdmin, require("./routes/posts"));
 app.use("/api/admin/packages", verifyAdmin, require("./routes/packages"));
-app.use("/api/admin/messages", verifyAdmin, require("./routes/messages")); // ✅ keep only this one
+app.use("/api/admin/messages", verifyAdmin, require("./routes/messages"));
 
-
-
-// ❌ Commented routes for later expansion
+// ❌ Commented routes for later
 // app.use("/api/admin/subscriptions", verifyAdmin, require("./routes/subscriptions"));
 // app.use("/api/admin/reviews", verifyAdmin, require("./routes/reviews"));
 // app.use("/api/admin/requests", verifyAdmin, require("./routes/requests"));
